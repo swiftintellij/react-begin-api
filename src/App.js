@@ -1,14 +1,21 @@
 import React from 'react';
 import './App.css';
+import { UserProvider } from "./UserContext";
 import Users from './Users';
 import Posts from './Posts';
+import { PostProvider } from './PostContext';
 
 function App() {
   return (
     <>
-      <Users/>
+      <UserProvider>
+        <Users/>
+      </UserProvider>
       <hr/>
-      <Posts/>
+      <PostProvider>
+        <Posts/>
+      </PostProvider>
+
     </>
   );
 };

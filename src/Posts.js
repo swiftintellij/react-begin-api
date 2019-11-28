@@ -1,22 +1,22 @@
 import React, {useState} from "react";
-import axios from "axios";
-import useAsync from "./useAsync";
 import Post from "./Post";
-
-async function getPosts() {
-    const response = await axios.get("https://jsonplaceholder.typicode.com/posts");
-    return response.data;
-}
+import { usePostState, usePostDispatch, getPosts } from "./PostContext";
 
 function Posts() {
 
-    const [state, refetch] = useAsync(getPosts, [], true);
-    const { loading, error, data: posts} = state;
+    const state = usePostState();
+    const dispatch = usePostDispatch();
+
+    const { loading, error, data: posts} = state.posts;
     const [postId, setPostId] = useState(null);
+
+    const fetchData = () => {
+        getPosts(dispatch);
+    }
 
     if (loading) return <div>로딩중...</div>
     if (error) return <div>에러발생!</div>
-    if (!posts) return <button onClick={refetch}>포스트 목록 불러오기</button>
+    if (!posts) return <button onClick={fetchData}>포스트 목록 불러오기</button>
 
     return (
         <>
@@ -25,7 +25,7 @@ function Posts() {
                 <li onClick={() => setPostId(post.id)} key={post.id}>{post.title}</li>
             ))}
             </ul>
-            <button onClick={refetch}>포스트 목록 불러오기</button>
+            <button onClick={fetchData}>포스트 목록 불러오기</button>
             { postId && <Post id={postId}/> }
         </>
     );

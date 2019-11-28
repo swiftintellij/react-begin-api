@@ -1,16 +1,16 @@
-import React from "react";
-import axios from "axios";
-import useAsync from "./useAsync";
-
-async function getPost(id) {
-    const response = await axios.get(`https://jsonplaceholder.typicode.com/posts/${id}`);
-    return response.data;
-}
+import React, {useEffect} from "react";
+import { usePostState, usePostDispatch, getPost } from "./PostContext";
 
 function Post({ id }) {
 
-    const [state] = useAsync(() => getPost(id), [id], false);
-    const {loading, data: post, error} = state;
+    const state = usePostState();
+    const dispatch = usePostDispatch();
+
+    const {loading, data: post, error} = state.post;
+
+    useEffect(() => {
+        getPost(dispatch, id);
+    }, [dispatch, id])
 
     if (loading) return <div>로딩중...</div>
     if (error) return <div>에러발생!</div>

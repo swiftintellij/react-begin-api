@@ -1,41 +1,32 @@
-import React, { useState, useEffect } from "react";
+import React, {useState} from "react";
 import axios from "axios";
+import useAsync from "./useAsync";
+import Post from "./Post";
+
+async function getPosts() {
+    const response = await axios.get("https://jsonplaceholder.typicode.com/posts");
+    return response.data;
+}
 
 function Posts() {
 
-    const [loading, setLoading] = useState(false);
-    const [posts, setPosts] = useState(null);
-    const [error, setError] = useState(null);
+    const [state, refetch] = useAsync(getPosts, [], true);
+    const { loading, error, data: posts} = state;
+    const [postId, setPostId] = useState(null);
 
-    const fetchPosts = async() => {
-        try {
-            setLoading(true);
-            setPosts(null);
-            setError(null);
-            const response = await axios.get("https://jsonplaceholder.typicode.com/posts");
-            setPosts(response.data);
-        } catch (e) {
-            setError(e);
-        }
-        setLoading(false);
-    };
-
-    useEffect(() => {
-        fetchPosts();
-    }, []);
-    
     if (loading) return <div>로딩중...</div>
     if (error) return <div>에러발생!</div>
-    if (!posts) return null
+    if (!posts) return <button onClick={refetch}>포스트 목록 불러오기</button>
 
     return (
         <>
             <ul>
             {posts.map(post => (
-                <li key={post.id}>{post.title}</li>
+                <li onClick={() => setPostId(post.id)} key={post.id}>{post.title}</li>
             ))}
             </ul>
-            <button onClick={fetchPosts}>다시 불러오기</button>
+            <button onClick={refetch}>포스트 목록 불러오기</button>
+            { postId && <Post id={postId}/> }
         </>
     );
 }

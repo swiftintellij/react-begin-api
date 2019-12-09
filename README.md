@@ -1,4 +1,4 @@
-# React 테스트
+# React 강의 따라하기
 
 간단한 Axios 사용
 
